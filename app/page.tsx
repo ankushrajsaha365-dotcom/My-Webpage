@@ -62,7 +62,7 @@ export default function Portfolio() {
       <nav className="sticky top-0 z-50 gradient-bg text-white shadow-lg">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="font-sans font-bold text-xl float-animation">Ankush Raj Saha</div>
+            <div className="font-sans font-bold text-xl float-animation">HireACoder</div>
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex space-x-8">
@@ -145,10 +145,10 @@ export default function Portfolio() {
       </nav>
 
       {/* Hero Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 gradient-bg">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 gradient-bg relative">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="font-sans text-4xl md:text-6xl font-bold text-white mb-6 animate-fade-in float-animation">
-            Hi, I'm <span className="gradient-text">Ankush Raj Saha</span>
+            Hi, I'm <span className="text-white">Ankush Raj Saha</span>
           </h1>
           <p className="font-serif text-xl md:text-2xl text-white/90 mb-8 animate-fade-in-delay">
             2nd-year B.Tech student in Computer Science & Engineering (AI & ML specialization)
@@ -170,7 +170,7 @@ export default function Portfolio() {
       <section id="about" className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           <h2 className="font-sans text-3xl md:text-4xl font-bold text-center mb-12 gradient-text">About Me</h2>
-          <Card className="hover:shadow-2xl transition-all duration-500 hover:scale-105 pulse-glow">
+          <Card className="hover:shadow-2xl hover:scale-105 transition-all duration-500 pulse-glow">
             <CardContent className="p-8">
               <p className="font-serif text-lg text-foreground leading-relaxed">
                 I'm a dedicated Computer Science student with a specialization in AI & ML at MCKV Institute of
@@ -325,7 +325,7 @@ export default function Portfolio() {
       {/* Footer */}
       <footer className="py-8 px-4 sm:px-6 lg:px-8 gradient-bg text-white">
         <div className="max-w-4xl mx-auto text-center">
-          <p className="font-serif">© 2024 Ankush Raj Saha. Built with passion and code.</p>
+          <p className="font-serif">© 2025 Ankush Raj Saha. Built with passion and code.</p>
         </div>
       </footer>
 
