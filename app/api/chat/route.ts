@@ -4,12 +4,70 @@ export async function POST(req: Request) {
 
     console.log("[v0] Chat API called with messages:", messages.length, "context items:", context.length)
 
+    const lastMessageRaw = messages?.[messages.length - 1]?.content ?? ""
+    const lastMessage = String(lastMessageRaw).toLowerCase()
+
+    const respond = (message: string, intent: string) =>
+      Response.json({
+        message,
+        metadata: {
+          responseType: "keyword",
+          intent,
+          conversationLength: messages.length,
+          hasContext: Array.isArray(context) ? context.length > 0 : false,
+        },
+      })
+
+    // Pricing / rate / budget intent
+    if (/\b(price|pricing|rate|rates|charge|fee|budget|quote|cost)\b/.test(lastMessage)) {
+      if (/\b(website|web|site)\b/.test(lastMessage)) {
+        return respond(
+          "For website development, Ankush’s rates start around ₹15,000 for a basic site and ₹25,000–50,000 for more complex apps. For a tailored quote, please email ankushrajsaha365@gmail.com with your requirements.",
+          "pricing",
+        )
+      }
+      if (/\b(hourly|per hour|hour)\b/.test(lastMessage)) {
+        return respond(
+          "Ankush’s typical hourly rate ranges from ₹500–₹800, depending on scope and complexity. For an exact estimate, please reach out at ankushrajsaha365@gmail.com.",
+          "pricing",
+        )
+      }
+      return respond(
+        "Pricing depends on scope. As a general guide: basic websites start at ₹15,000; complex apps ₹25,000–₹50,000; hourly work ₹500–₹800. For a precise quote, contact: ankushrajsaha365@gmail.com.",
+        "pricing",
+      )
+    }
+
+    // Availability intent
+    if (/\b(available|availability|free|hire|capacity|schedule)\b/.test(lastMessage)) {
+      return respond(
+        "Yes—Ankush is currently available for new projects. He can typically start consultations right away and begin within 1–2 weeks. Email: ankushrajsaha365@gmail.com or call 7003897566 to confirm dates.",
+        "availability",
+      )
+    }
+
+    // Timeline intent
+    if (/\b(timeline|how long|delivery|duration|turnaround|timeframe|deadline)\b/.test(lastMessage)) {
+      if (/\b(simple|basic|landing)\b/.test(lastMessage)) {
+        return respond("Simple websites or landing pages are usually delivered in 5–7 days.", "timeline")
+      }
+      if (/\b(complex|ecommerce|application|app)\b/.test(lastMessage)) {
+        return respond(
+          "Complex applications typically take 3–6 weeks, depending on features and integrations.",
+          "timeline",
+        )
+      }
+      return respond(
+        "Typical timelines: simple sites 5–7 days; standard apps 2–3 weeks; complex apps 3–6 weeks. Share your scope for a precise estimate.",
+        "timeline",
+      )
+    }
+
     const apiKey = process.env.OPENAI_API_KEY
 
     if (!apiKey) {
       console.log("[v0] No OpenAI API key found, using enhanced fallback responses")
 
-      // Get the last user message and conversation context
       const lastMessage = messages[messages.length - 1]?.content?.toLowerCase() || ""
       const conversationHistory = context.join(" ").toLowerCase()
 

@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react"
+
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -12,6 +14,9 @@ import Chatbot from "@/components/chatbot"
 export default function Portfolio() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [showBackToTop, setShowBackToTop] = useState(false)
+  const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" })
+  const [status, setStatus] = useState<"idle" | "sending" | "success" | "error" | "fallback">("idle")
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -55,6 +60,63 @@ export default function Portfolio() {
       tech: "Python, Pandas, Plotly",
     },
   ]
+
+  async function handleContactSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    setErrorMsg(null)
+
+    // basic validation
+    if (!form.name.trim() || !form.email.trim() || !form.message.trim()) {
+      setStatus("error")
+      setErrorMsg("Please fill in your name, email, and message.")
+      return
+    }
+
+    const toEmail = "ankushrajsaha365@gmail.com"
+    const subjectLine = form.subject.trim()
+      ? `[Portfolio] ${form.subject.trim()}`
+      : `[Portfolio] Message from ${form.name.trim()}`
+    const bodyText = `Name: ${form.name}\n` + `Email: ${form.email}\n\n` + `Message:\n${form.message}`
+
+    const mailtoHref = `mailto:${toEmail}?subject=${encodeURIComponent(subjectLine)}&body=${encodeURIComponent(bodyText)}`
+
+    try {
+      setStatus("sending")
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      })
+
+      let data: any = null
+      try {
+        data = await res.json()
+      } catch {
+        // ignore parse error, handle by status
+      }
+
+      if (res.ok && data?.ok) {
+        setStatus("success")
+        setForm({ name: "", email: "", subject: "", message: "" })
+        return
+      }
+
+      // If API exposed a mailto fallback, use it; otherwise use our local mailto.
+      if (res.status === 503 && data?.fallback?.mailto) {
+        setStatus("fallback")
+        window.location.href = data.fallback.mailto
+        return
+      }
+
+      setStatus("fallback")
+      window.location.href = mailtoHref
+      return
+    } catch (err: any) {
+      setStatus("fallback")
+      window.location.href = mailtoHref
+      return
+    }
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -285,7 +347,13 @@ export default function Portfolio() {
             </div>
             <div className="flex items-center gap-2 hover:scale-110 transition-all duration-300">
               <Github className="text-primary" size={20} />
-              <a href="#" className="font-serif text-foreground hover:text-primary transition-colors">
+              <a
+                href="https://github.com/ankushrajsaha365-dotcom"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-serif text-foreground hover:text-primary transition-colors"
+                aria-label="Open GitHub Profile (opens in a new tab)"
+              >
                 GitHub Profile
               </a>
             </div>
@@ -303,20 +371,71 @@ export default function Portfolio() {
               <CardTitle className="font-sans text-center gradient-text">Send me a message</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid md:grid-cols-2 gap-4">
-                <Input placeholder="Your Name" className="font-serif hover:scale-105 transition-all duration-300" />
+              <form onSubmit={handleContactSubmit} className="space-y-4" aria-live="polite">
+                <div className="grid md:grid-cols-2 gap-4">
+                  <Input
+                    name="name"
+                    placeholder="Your Name"
+                    className="font-serif hover:scale-105 transition-all duration-300"
+                    value={form.name}
+                    onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+                    disabled={status === "sending"}
+                    required
+                    aria-label="Your name"
+                  />
+                  <Input
+                    name="email"
+                    type="email"
+                    placeholder="Your Email"
+                    className="font-serif hover:scale-105 transition-all duration-300"
+                    value={form.email}
+                    onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+                    disabled={status === "sending"}
+                    required
+                    aria-label="Your email"
+                  />
+                </div>
+
                 <Input
-                  type="email"
-                  placeholder="Your Email"
+                  name="subject"
+                  placeholder="Subject (optional)"
                   className="font-serif hover:scale-105 transition-all duration-300"
+                  value={form.subject}
+                  onChange={(e) => setForm((f) => ({ ...f, subject: e.target.value }))}
+                  disabled={status === "sending"}
+                  aria-label="Subject"
                 />
-              </div>
-              <Textarea
-                placeholder="Your Message"
-                rows={5}
-                className="font-serif hover:scale-105 transition-all duration-300"
-              />
-              <Button className="w-full gradient-bg hover:scale-105 transition-all duration-300">Send Message</Button>
+
+                <Textarea
+                  name="message"
+                  placeholder="Your Message"
+                  rows={5}
+                  className="font-serif hover:scale-105 transition-all duration-300"
+                  value={form.message}
+                  onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
+                  disabled={status === "sending"}
+                  required
+                  aria-label="Your message"
+                />
+
+                {status === "success" && (
+                  <p className="text-green-600 text-sm">Thanks! Your message has been sent successfully.</p>
+                )}
+                {status === "fallback" && (
+                  <p className="text-amber-600 text-sm">
+                    Email service isn’t configured. We opened your mail app so you can send the message directly.
+                  </p>
+                )}
+                {status === "error" && errorMsg && <p className="text-red-600 text-sm">{errorMsg}</p>}
+
+                <Button
+                  type="submit"
+                  className="w-full gradient-bg hover:scale-110 transition-all duration-300"
+                  disabled={status === "sending"}
+                >
+                  {status === "sending" ? "Sending..." : "Send Message"}
+                </Button>
+              </form>
             </CardContent>
           </Card>
         </div>

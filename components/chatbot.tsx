@@ -37,6 +37,7 @@ export default function Chatbot() {
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const formRef = useRef<HTMLFormElement>(null)
 
   const suggestedQuestions = [
     "What are Ankush's main skills?",
@@ -139,10 +140,7 @@ export default function Chatbot() {
     setInput(question)
     setShowSuggestions(false)
     setTimeout(() => {
-      const form = document.querySelector("form")
-      if (form) {
-        form.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }))
-      }
+      formRef.current?.requestSubmit()
     }, 100)
   }
 
@@ -174,12 +172,6 @@ export default function Chatbot() {
 
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-  }
-
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      handleSubmit(e)
-    }
   }
 
   return (
@@ -331,17 +323,17 @@ export default function Chatbot() {
               </div>
 
               <div className="p-4 border-t bg-background/95 backdrop-blur-sm">
-                <form onSubmit={handleSubmit} className="flex gap-3">
+                <form ref={formRef} onSubmit={handleSubmit} className="flex gap-3">
                   <div className="flex-1 relative">
                     <Input
                       ref={inputRef}
                       value={input}
                       onChange={(e) => setInput(e.target.value)}
-                      onKeyPress={handleKeyPress}
                       placeholder="Ask about skills, projects, availability, pricing..."
                       className="rounded-full border-2 focus:border-primary/50 transition-all pr-12 bg-white/80 backdrop-blur-sm"
                       disabled={isLoading}
                       maxLength={500}
+                      aria-label="Type your message"
                     />
                     <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs text-muted-foreground">
                       {input.length}/500
@@ -352,6 +344,7 @@ export default function Chatbot() {
                     size="icon"
                     className="rounded-full gradient-bg hover:scale-105 transition-all shadow-lg ring-2 ring-white/20 hover:ring-white/40"
                     disabled={isLoading || !input.trim()}
+                    aria-label="Send message"
                   >
                     {isLoading ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
                   </Button>
