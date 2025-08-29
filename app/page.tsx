@@ -72,14 +72,6 @@ export default function Portfolio() {
       return
     }
 
-    const toEmail = "ankushrajsaha365@gmail.com"
-    const subjectLine = form.subject.trim()
-      ? `[Portfolio] ${form.subject.trim()}`
-      : `[Portfolio] Message from ${form.name.trim()}`
-    const bodyText = `Name: ${form.name}\n` + `Email: ${form.email}\n\n` + `Message:\n${form.message}`
-
-    const mailtoHref = `mailto:${toEmail}?subject=${encodeURIComponent(subjectLine)}&body=${encodeURIComponent(bodyText)}`
-
     try {
       setStatus("sending")
       const res = await fetch("/api/contact", {
@@ -88,6 +80,7 @@ export default function Portfolio() {
         body: JSON.stringify(form),
       })
 
+      // Try to parse JSON (may fail if server not reachable)
       let data: any = null
       try {
         data = await res.json()
@@ -101,20 +94,19 @@ export default function Portfolio() {
         return
       }
 
-      // If API exposed a mailto fallback, use it; otherwise use our local mailto.
+      // 503 with fallback mailto
       if (res.status === 503 && data?.fallback?.mailto) {
         setStatus("fallback")
+        // Open mail client with prefilled details
         window.location.href = data.fallback.mailto
         return
       }
 
-      setStatus("fallback")
-      window.location.href = mailtoHref
-      return
+      setStatus("error")
+      setErrorMsg(data?.error || `Failed to send your message. Please try again.`)
     } catch (err: any) {
-      setStatus("fallback")
-      window.location.href = mailtoHref
-      return
+      setStatus("error")
+      setErrorMsg("Network error. Please check your connection and try again.")
     }
   }
 
