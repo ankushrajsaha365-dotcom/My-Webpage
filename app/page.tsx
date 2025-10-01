@@ -334,7 +334,7 @@ export default function Portfolio() {
             <div className="flex items-center gap-2 hover:scale-110 transition-all duration-300">
               <Phone className="text-primary" size={20} />
               <a href="tel:7003897566" className="font-serif text-foreground hover:text-primary transition-colors">
-                7003897566
+                **********
               </a>
             </div>
             <div className="flex items-center gap-2 hover:scale-110 transition-all duration-300">

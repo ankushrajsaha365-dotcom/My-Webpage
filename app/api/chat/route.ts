@@ -88,7 +88,7 @@ export async function POST(req: Request) {
         foundMatch = true
       } else if (lastMessage.includes("contact") || lastMessage.includes("email") || lastMessage.includes("phone")) {
         response =
-          "You can reach Ankush at ankushrajsaha365@gmail.com or call him at 7003897566. He's open to internships and collaborations!"
+          "You can reach Ankush at ankushrajsaha365@gmail.com or call him at **********. He's open to internships and collaborations!"
         foundMatch = true
       } else if (
         lastMessage.includes("education") ||
@@ -188,7 +188,7 @@ export async function POST(req: Request) {
         lastMessage.includes("hire")
       ) {
         response =
-          "Yes, Ankush is currently available for new projects! He can start consultations immediately and begin new projects within 1-2 weeks. Contact him at ankushrajsaha365@gmail.com or call 7003897566 to discuss your project and check specific availability dates."
+          "Yes, Ankush is currently available for new projects! He can start consultations immediately and begin new projects within 1-2 weeks. Contact him at ankushrajsaha365@gmail.com or call ********** to discuss your project and check specific availability dates."
         foundMatch = true
       } else if (
         lastMessage.includes("portfolio") ||
@@ -236,7 +236,7 @@ About Ankush:
 - Specializing in Computer Science & Engineering with AI & ML
 - Skills: JavaScript, Python, React, Node.js, Machine Learning, TensorFlow, PyTorch, SQL, Git, HTML/CSS
 - Projects: AI Chat Assistant (Python, NLP), E-commerce Website (React, Node.js), Data Visualization Dashboard (Python, Plotly)
-- Contact: ankushrajsaha365@gmail.com, Phone: 7003897566
+- Contact: ankushrajsaha365@gmail.com, Phone: **********
 - Available for web development, AI/ML projects, and business collaborations
 - Competitive rates: Basic websites ₹15,000+, Complex apps ₹25,000-50,000, Hourly ₹500-800
 - Quick turnaround: Simple sites 5-7 days, Complex apps 3-6 weeks
